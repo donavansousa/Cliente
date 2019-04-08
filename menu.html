@@ -1,0 +1,29 @@
+﻿<html>
+<style>
+    #exampleAccordion{
+        overflow-y: scroll;
+    }
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 120%; !important // Ensure `.modal-content` extends the full width of the parent `.modal-dialog`
+  // counteract the pointer-events: none; in the .modal-dialog
+  pointer-events: auto;
+  background-color: $modal-content-bg;
+  background-clip: padding-box;
+  border: $modal-content-border-width solid $modal-content-border-color;
+  @include border-radius($border-radius-lg);
+  @include box-shadow($modal-content-box-shadow-xs);
+  // Remove focus outline from opened modal
+  outline: 0;
+}
+</style>
+<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+    <a class="nav-link" href="/clientes/listaClientes.php">
+        <i class="fa fa-fw fa-users"></i>
+        <span class="nav-link-text">Clientes</span>
+    </a>
+</li>
+</html>

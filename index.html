@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Clientes</title>
+  <!-- Bootstrap core CSS-->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Page level plugin CSS-->
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin.css" rel="stylesheet">
+  <style>
+    .box {
+      display: inline-block;
+      /* o resto permanece igual */
+    }
+
+    @media (max-width: @screen-xs-min) {
+      .modal-xs { width: @modal-sm; }
+    }
+
+    .modal-body {
+      max-height: calc(100vh - 210px);
+      overflow-y: auto;
+    }
+    .alert{
+      margin: 0 auto;
+      width: 50%;
+    }
+
+	 #exampleAccordion{
+        overflow-y: scroll;
+    }
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 120%; !important // Ensure `.modal-content` extends the full width of the parent `.modal-dialog`
+  // counteract the pointer-events: none; in the .modal-dialog
+  pointer-events: auto;
+  background-color: $modal-content-bg;
+  background-clip: padding-box;
+  border: $modal-content-border-width solid $modal-content-border-color;
+  @include border-radius($border-radius-lg);
+  @include box-shadow($modal-content-box-shadow-xs);
+  // Remove focus outline from opened modal
+  outline: 0;
+}
+
+.slider {
+	overflow-y: hidden;
+	max-height: 500px; /* approximate max height */
+
+	transition-property: all;
+	transition-duration: .5s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+
+.slider.closed {
+	max-height: 0;
+}
+  </style>
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+	  <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+		<a class="nav-link" href="index.html">
+			<i class="fa fa-fw fa-users"></i>
+			<span class="nav-link-text active">Clientes</span>
+		</a>
+	</li>
+      </ul>
+
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+
+    </div>
+  </nav>
+  <div class="content-wrapper">
+  <div class="alertas success" style="display:none" style="margin-bottom: 3%">
+    <div align="center" class="alert alert-success alert-dismissable">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong id="valSuccess"></strong>
+    </div>
+  </div>
+
+    <div class="alertas error" style="display:none" style="margin-bottom: 3%">
+      <div align="center" class="alert alert-danger alert-dismissable">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong id="valError"></strong>
+      </div>
+    </div>
+	<br><br>
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Clientes</li>
+      </ol>
+    <!-- Example DataTables Card-->
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="fa fa-table"></i> Lista de Clientes
+        <div align="right">
+          <a style="color: white;" class="btn btn-primary" data-toggle="modal" data-target="#InsertModal">Incluir Cliente</a>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tab" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+              <th>CPF ou CNPJ</th>
+              <th>Nome</th>
+              <th>Data de Nascimento</th>
+              <th>Email</th>
+              <th>Celular</th>
+              <th>Tipo Cliente</th>
+              <th>Opções</th>
+            </tr>
+            </thead>
+            <tbody id="corpoTabela">
+            
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.container-fluid-->
+  <!-- /.content-wrapper-->
+  <footer class="sticky-footer">
+    <div class="container">
+      <div class="text-center">
+        <small>Copyright © 2019</small>
+      </div>
+    </div>
+  </footer>
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fa fa-angle-up"></i>
+  </a>
+
+  <!-- Insert Modal-->
+  <div class="modal fade" id="InsertModal" tabindex="-1" role="dialog" aria-labelledby="InsertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Insere Cliente</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form name="formIncluir" id="formIncluir" method="POST">
+          <div class="modal-body">
+            <div class="form-row input-group-sm">
+              <div class="form-group col-md-8">
+                <label for="inputState">Tipo de Cliente</label>
+                <select id="oppTipoCliente" name="oppTipoCliente" class="form-control form-control-sm">
+                  <option value="" selected>Selecione o Tipo de Cliente...</option>
+                  <option value="1">Pessoa Física</option>
+                  <option value="2">Pessoa Jurídica</option>
+                </select>
+              </div>
+            <div id="camposIncluiCliente" style="display:none; width: 100%;">
+
+                  <div class="form-group col-md-9">
+                    <label id="cpfCnpjModal" for="cpfCnpj"></label><br>
+                    <input type="text" id="cpfCnpj" for="cpfCnpj" class="form-control form-control-sm cpf_cnpj" name="cpfCnpj"  />
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="nome">Nome</label><br>
+                    <input for="nome" required type="text" id="nome" class="form-control form-control-sm" name="nome" placeholder="Nome" />
+                  </div>
+
+                <div class="form-group col-md-9">
+                  <label for="dtNascimento">Data de Nascimento</label><br>
+                  <input for="dtNascimento" required type="date" id="dtNascimento" class="form-control form-control-sm" name="dtNascimento" placeholder="Data Nascimento" />
+                </div>
+
+              <div class="form-group col-md-9">
+                <label for="email">Email</label><br>
+                <input for="email" required type="email" id="email" class="form-control form-control-sm email" name="email" placeholder="Email" />
+              </div>
+			  
+			  <div class="form-group col-md-9">
+                <label for="fone">Telefone</label><br>
+                <input for="fone" type="text" id="fone" class="form-control form-control-sm" name="fone" placeholder="fone" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="celular">Celular</label><br>
+                <input for="celular" required type="text" id="celular" class="form-control form-control-sm" name="celular" placeholder="Celular" />
+              </div>
+			  <br>
+			  <div align="center">
+				<button type="button" id="button" class="btn btn-small btn-secondary btn-sm" onclick="createAddress();">Adicionar Novo Endereço</button>
+			  </div>
+			  <br>
+			<div class="enderecos">
+			   <div id="endereco1" class="valoresEnderecos">
+				<button type="button" id="button1" data-id="1" class="btn btn-sm" onclick="slider(1);">- Endereço</button>
+				<br><br>
+				<fieldset class="slider1">
+				<div class="form-group col-md-9">
+                <label for="cep1">CEP</label><br>
+                <input for="cep1" required  type="text" id="cep1" data-id="1" class="form-control form-control-sm cep" name="cep1" placeholder="CEP" />
+              </div>
+              <div class="form-group col-md-9">
+                <label for="logradouro1">Logradouro</label><br>
+                <input for="logradouro1" required type="text" id="logradouro1" data-id="1" class="form-control form-control-sm" name="logradouro1" placeholder="Logradouro" />
+              </div>
+			  
+			  <div class="form-group col-md-9">
+                <label for="bairro1">Bairro</label><br>
+                <input for="bairro1" required type="text" id="bairro1" data-id="1" class="form-control form-control-sm" name="bairro1" placeholder="Bairro" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="numero1">Número</label><br>
+                <input for="numero1" required type="text" data-min="1" data-max="1000" data-id="1" id="numero1" class="form-control form-control-sm bfh-number" data-zeros="true" name="numero1" placeholder="Número" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="complemento1">Complemento</label><br>
+                <input for="complemento1" type="text" id="complemento1" data-id="1" class="form-control form-control-sm" name="complemento1" placeholder="Complemento" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="cidade1">Cidade</label><br>
+                <input for="cidade1" required type="text" id="cidade1" data-id="1" class="form-control form-control-sm" name="cidade1" placeholder="Cidade" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="estado1">Estado</label><br>
+                <select required class="form-control form-control-sm" data-id="1" name="estado1" id="estado1">
+                  <option value="">Selecione o Estado</option>
+                  <option value="ac">Acre</option>
+                  <option value="al">Alagoas</option>
+                  <option value="am">Amazonas</option>
+                  <option value="ap">Amapá</option>
+                  <option value="ba">Bahia</option>
+                  <option value="ce">Ceará</option>
+                  <option value="df">Distrito Federal</option>
+                  <option value="es">Espírito Santo</option>
+                  <option value="go">Goiás</option>
+                  <option value="ma">Maranhão</option>
+                  <option value="mt">Mato Grosso</option>
+                  <option value="ms">Mato Grosso do Sul</option>
+                  <option value="mg">Minas Gerais</option>
+                  <option value="pa">Pará</option>
+                  <option value="pb">Paraíba</option>
+                  <option value="pr">Paraná</option>
+                  <option value="pe">Pernambuco</option>
+                  <option value="pi">Piauí</option>
+                  <option value="rj">Rio de Janeiro</option>
+                  <option value="rn">Rio Grande do Norte</option>
+                  <option value="ro">Rondônia</option>
+                  <option value="rs">Rio Grande do Sul</option>
+                  <option value="rr">Roraima</option>
+                  <option value="sc">Santa Catarina</option>
+                  <option value="se">Sergipe</option>
+                  <option value="sp">São Paulo</option>
+                  <option value="to">Tocantins</option>
+                </select>
+              </div>
+			  </fieldset>
+			  </div>
+			  </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+            <input type="submit" class="btn btn-primary" value="Salvar" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Edit Modal-->
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edita Cliente</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form name="formEditar" id="formEditar" method="POST">
+		<input type="hidden" id="idClienteEdit" name="idClienteEdit"/>
+          <div class="modal-body">
+            <div class="form-row input-group-sm">
+              <div class="form-group col-md-8">
+                <label for="inputState">Tipo de Cliente</label>
+                <select id="oppTipoClienteEdit" name="oppTipoClienteEdit" class="form-control form-control-sm">
+                  <option value="" selected>Selecione o Tipo de Cliente...</option>
+                  <option value="1">Pessoa Física</option>
+                  <option value="2">Pessoa Jurídica</option>
+                </select>
+              </div>
+            <div class="camposEditaCliente" style="width: 100%;">
+
+                  <div class="form-group col-md-9">
+                    <label id="cpfCnpjModalEdit" for="cpfCnpjEdit"></label><br>
+                    <input type="text" id="cpfCnpjEdit" for="cpfCnpjEdit" class="form-control form-control-sm cpf_cnpj" name="cpfCnpjEdit"  />
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="nomeEdit">Nome</label><br>
+                    <input for="nomeEdit" required type="text" id="nomeEdit" class="form-control form-control-sm" name="nomeEdit" placeholder="Nome" />
+                  </div>
+
+                <div class="form-group col-md-9">
+                  <label for="dtNascimentoEdit">Data de Nascimento</label><br>
+                  <input for="dtNascimentoEdit" required type="date" id="dtNascimentoEdit" class="form-control form-control-sm" name="dtNascimentoEdit" placeholder="Data Nascimento" />
+                </div>
+
+              <div class="form-group col-md-9">
+                <label for="emailEdit">Email</label><br>
+                <input for="emailedit" required type="email" id="emailEdit" class="form-control form-control-sm email" name="emailEdit" placeholder="Email" />
+              </div>
+			  
+			  <div class="form-group col-md-9">
+                <label for="foneEdit">Telefone</label><br>
+                <input for="foneEdit" type="text" id="foneEdit" class="form-control form-control-sm" name="foneEdit" placeholder="fone" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="celularEdit">Celular</label><br>
+                <input for="celularEdit" required type="text" id="celularEdit" class="form-control form-control-sm" name="celularEdit" placeholder="Celular" />
+              </div>
+			  <br>
+			  <div align="center">
+				<button type="button" id="buttonEdit" class="btn btn-small btn-secondary btn-sm" onclick="createAddressEdit();">Adicionar Novo Endereço</button>
+			  </div>
+			  <br>
+			<div class="enderecosEdit">
+			   <div id="enderecoEdit1" class="valoresEnderecosEdit">
+				<button type="button" id="buttonEdit1" data-id="1" class="btn btn-sm" onclick="sliderEdit(1);">- Endereço</button>
+				<br><br>
+				<fieldset class="sliderEdit1">
+				<div class="form-group col-md-9">
+                <label for="cepEdit1">CEP</label><br>
+                <input for="cepEdit1" required  type="text" id="cepEdit1" data-id="1" class="form-control form-control-sm cepEdit" name="cepEdit1" placeholder="CEP" />
+              </div>
+              <div class="form-group col-md-9">
+                <label for="logradouroEdit1">Logradouro</label><br>
+                <input for="logradouroEdit1" required type="text" id="logradouroEdit1" data-id="1" class="form-control form-control-sm" name="logradouroEdit1" placeholder="Logradouro" />
+              </div>
+			  
+			  <div class="form-group col-md-9">
+                <label for="bairroEdit1">Bairro</label><br>
+                <input for="bairroEdit1" required type="text" id="bairroEdit1" data-id="1" class="form-control form-control-sm" name="bairroEdit1" placeholder="Bairro" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="numeroEdit1">Número</label><br>
+                <input for="numeroEdit1" required type="text" data-min="1" data-max="1000" data-id="1" id="numeroEdit1" class="form-control form-control-sm bfh-number" data-zeros="true" name="numeroEdit1" placeholder="Número" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="complementoEdit1">Complemento</label><br>
+                <input for="complementoEdit1" type="text" id="complementoEdit1" data-id="1" class="form-control form-control-sm" name="complementoEdit1" placeholder="Complemento" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="cidadeEdit1">Cidade</label><br>
+                <input for="cidadeEdit1" required type="text" id="cidadeEdit1" data-id="1" class="form-control form-control-sm" name="cidadeEdit1" placeholder="Cidade" />
+              </div>
+
+              <div class="form-group col-md-9">
+                <label for="estadoEdit1">Estado</label><br>
+                <select required class="form-control form-control-sm" data-id="1" name="estadoEdit1" id="estadoEdit1">
+                  <option value="">Selecione o Estado</option>
+                  <option value="ac">Acre</option>
+                  <option value="al">Alagoas</option>
+                  <option value="am">Amazonas</option>
+                  <option value="ap">Amapá</option>
+                  <option value="ba">Bahia</option>
+                  <option value="ce">Ceará</option>
+                  <option value="df">Distrito Federal</option>
+                  <option value="es">Espírito Santo</option>
+                  <option value="go">Goiás</option>
+                  <option value="ma">Maranhão</option>
+                  <option value="mt">Mato Grosso</option>
+                  <option value="ms">Mato Grosso do Sul</option>
+                  <option value="mg">Minas Gerais</option>
+                  <option value="pa">Pará</option>
+                  <option value="pb">Paraíba</option>
+                  <option value="pr">Paraná</option>
+                  <option value="pe">Pernambuco</option>
+                  <option value="pi">Piauí</option>
+                  <option value="rj">Rio de Janeiro</option>
+                  <option value="rn">Rio Grande do Norte</option>
+                  <option value="ro">Rondônia</option>
+                  <option value="rs">Rio Grande do Sul</option>
+                  <option value="rr">Roraima</option>
+                  <option value="sc">Santa Catarina</option>
+                  <option value="se">Sergipe</option>
+                  <option value="sp">São Paulo</option>
+                  <option value="to">Tocantins</option>
+                </select>
+              </div>
+			  </fieldset>
+			  </div>
+			  </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+            <input type="submit" class="btn btn-primary" value="Salvar" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Delete Modal-->
+  <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Excluir Cliente</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Tem certeza que deseja excluir o cliente <label style="color: red" id="deletar"></label>? </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <form name="formExcluir" id="formExcluir" method="post">
+            <input type="hidden" id="idDeletar" name="idDeletar"/>
+            <input type="submit" class="btn btn-primary" value="Sim" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <!-- Page level plugin JavaScript-->
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin.min.js"></script>
+  <!-- Custom scripts for this page-->
+<script src="js/jquery.mask.js"></script>
+<script src="js/valida_cpf_cnpj.js"></script>
+<script src="js/cliente.js"></script>
+</div>
+</body>
+
+</html>
